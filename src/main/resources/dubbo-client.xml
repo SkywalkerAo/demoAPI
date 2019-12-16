@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--<bean name="dubboConfig" class="com.demo2.dubbo.config.DubboConfig" />-->
+    <context:property-placeholder ignore-unresolvable="true" file-encoding="utf-8" location="classpath*:dubboConfig.properties" />
+
+
+    <dubbo:application name="dubbo-api-demo" />
+    <dubbo:registry id="registry" address="${dubbo.registry.address}" />
+    <dubbo:protocol name="dubbo" port="${dubbo.protocol.port}" threads="200"  dispatcher="message"/>
+    <dubbo:monitor protocol="registry" />
+
+    <!-- 消费服务 dubbo service -->
+    <dubbo:consumer id="dubbo-service"
+                    check="false"
+                    timeout="3000"
+                    loadbalance="leastactive"
+                    retries="0"
+                    validation="true"
+                    group="dubbo.server"
+                    version="1.0.0.0"
+                    registry="registry"/>
+    <dubbo:reference id="demoService" interface="demo.dubbo.service.DemoService" init="true" consumer="dubbo-service"/>
+</beans>
